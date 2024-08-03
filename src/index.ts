@@ -11,8 +11,34 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+export interface ReturnData {
+	client_ip: string;
+	locale: string;
+	useragent: string;
+	status?: string;
+}
+
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
+
+	  let status = ""
+	  const clientIP = request.headers.get("X-Forwarded-For") || request.headers.get("Cf-Connecting-Ip")
+	  const locale = request.headers.get("Accept-Language")
+	  const useragent = request.headers.get("User-Agent")
+
+	  if ( clientIP == null ) {
+		status = "ng"	
+	  } else {
+		status = "ok"
+	  }
+	
+	  const data:ReturnData = {
+		client_ip: clientIP || "Unknown",
+		locale: locale || "Unknown",
+		useragent: useragent || "Unknown",
+		status 
+	  }
+
+	  return Response.json(data);
 	},
 } satisfies ExportedHandler<Env>;
