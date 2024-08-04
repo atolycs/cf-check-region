@@ -20,38 +20,38 @@ export interface ReturnData {
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
-	  const url = new URL(request.url)
-	  const searchParams = url.searchParams
+		const url = new URL(request.url);
+		const searchParams = url.searchParams;
 
-	  const privacy_mode = searchParams.get("privacy")
-	  let clientIP = ""
-	  
-	  if (privacy_mode != "true") {
-		  const ip_route = request.headers.get("Cf-Connecting-Ip")?.split(".") || request.headers.get("X-Forwarded-For")?.split(".")
-		  // @ts-ignore
-		  clientIP = ip_route[0] + ".XXX.XXX.XXX"
-	  } else {
-		  // @ts-ignore
-		  clientIP = request.headers.get("X-Forwarded-For") || request.headers.get("Cf-Connecting-Ip")
-	  }
+		const privacy_mode = searchParams.get('privacy');
+		let clientIP = '';
 
-	  let status = ""
-	  const locale = request.headers.get("Accept-Language")
-	  const useragent = request.headers.get("User-Agent")
+		if (privacy_mode != 'true') {
+			const ip_route = request.headers.get('Cf-Connecting-Ip')?.split('.') || request.headers.get('X-Forwarded-For')?.split('.');
+			// @ts-ignore
+			clientIP = ip_route[0] + '.XXX.XXX.XXX';
+		} else {
+			// @ts-ignore
+			clientIP = request.headers.get('X-Forwarded-For') || request.headers.get('Cf-Connecting-Ip');
+		}
 
-	  if ( clientIP == null ) {
-		status = "ng"	
-	  } else {
-		status = "ok"
-	  }
-	
-	  const data:ReturnData = {
-		client_ip: clientIP || "Unknown",
-		locale: locale || "Unknown",
-		useragent: useragent || "Unknown",
-		status 
-	  }
+		let status = '';
+		const locale = request.headers.get('Accept-Language');
+		const useragent = request.headers.get('User-Agent');
 
-	  return Response.json(data);
+		if (clientIP == null) {
+			status = 'ng';
+		} else {
+			status = 'ok';
+		}
+
+		const data: ReturnData = {
+			client_ip: clientIP || 'Unknown',
+			locale: locale || 'Unknown',
+			useragent: useragent || 'Unknown',
+			status,
+		};
+
+		return Response.json(data);
 	},
 } satisfies ExportedHandler<Env>;
