@@ -20,9 +20,22 @@ export interface ReturnData {
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
+	  const url = new URL(request.url)
+	  const searchParams = url.searchParams
+
+	  const privacy_mode = searchParams.get("privacy")
+	  let clientIP = ""
+	  
+	  if (privacy_mode != "true") {
+		  const ip_route = request.headers.get("Cf-Connecting-Ip")?.split(".") || request.headers.get("X-Forwarded-For")?.split(".")
+		  // @ts-ignore
+		  clientIP = ip_route[0] + ".XXX.XXX.XXX"
+	  } else {
+		  // @ts-ignore
+		  clientIP = request.headers.get("X-Forwarded-For") || request.headers.get("Cf-Connecting-Ip")
+	  }
 
 	  let status = ""
-	  const clientIP = request.headers.get("X-Forwarded-For") || request.headers.get("Cf-Connecting-Ip")
 	  const locale = request.headers.get("Accept-Language")
 	  const useragent = request.headers.get("User-Agent")
 
