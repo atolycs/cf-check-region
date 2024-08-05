@@ -15,6 +15,7 @@ export interface ReturnData {
 	client_ip: string;
 	locale: string;
 	useragent: string;
+	country?: string;
 	status?: string;
 }
 
@@ -52,6 +53,7 @@ export default {
 			client_ip: clientIP || 'Unknown',
 			locale: locale || 'Unknown',
 			useragent: useragent || 'Unknown',
+			country: request.cf?.country,
 			status,
 		};
 
