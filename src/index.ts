@@ -26,7 +26,9 @@ export default {
 		const privacy_mode = searchParams.get('privacy');
 		let clientIP = '';
 
-		if (privacy_mode != 'true') {
+		if (request.url.includes('localhost')) {
+			clientIP = '<local test server>'
+		} else if (privacy_mode != 'true') {
 			const ip_route = request.headers.get('Cf-Connecting-Ip')?.split('.') || request.headers.get('X-Forwarded-For')?.split('.');
 			// @ts-ignore
 			clientIP = ip_route[0] + '.XXX.XXX.XXX';
@@ -34,6 +36,7 @@ export default {
 			// @ts-ignore
 			clientIP = request.headers.get('X-Forwarded-For') || request.headers.get('Cf-Connecting-Ip');
 		}
+
 
 		let status = '';
 		const locale = request.headers.get('Accept-Language');
