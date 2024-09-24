@@ -12,51 +12,60 @@
  */
 
 export interface ReturnData {
-	client_ip: string;
-	locale: string;
-	useragent: string;
-	country?: string;
-	status?: string;
+  client_ip: string;
+  locale: string;
+  useragent: string;
+  country?: string;
+  status?: string;
 }
 
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		const url = new URL(request.url);
-		const searchParams = url.searchParams;
+  async fetch(request, env, ctx): Promise<Response> {
+    // @ts-ignore
+    const { DEV } = env;
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
 
-		const privacy_mode = searchParams.get('privacy');
-		let clientIP = '';
+    console.log(DEV);
+    const privacy_mode = searchParams.get("privacy") || "false";
+    let clientIP = "";
 
-		if (request.url.includes('localhost')) {
-			clientIP = '<local test server>'
-		} else if (privacy_mode != 'true') {
-			const ip_route = request.headers.get('Cf-Connecting-Ip')?.split('.') || request.headers.get('X-Forwarded-For')?.split('.');
-			// @ts-ignore
-			clientIP = ip_route[0] + '.XXX.XXX.XXX';
-		} else {
-			// @ts-ignore
-			clientIP = request.headers.get('X-Forwarded-For') || request.headers.get('Cf-Connecting-Ip');
-		}
+    console.log(request);
+    if (request.url.includes("localhost")) {
+      clientIP = "<local test server>";
+    } else if (!DEV) {
+      if (privacy_mode != "true") {
+        const ip_route =
+          request.headers.get("Cf-Connecting-Ip")?.split(".") ||
+          request.headers.get("x-forwarded-for")?.split(".");
+        // @ts-ignore
+        clientIP = ip_route[0] + ".XXX.XXX.XXX";
+      } else {
+        // @ts-ignore
+        clientIP =
+          request.headers.get("X-Forwarded-For") ||
+          request.headers.get("Cf-Connecting-Ip");
+      }
+    }
 
+    let status = "";
+    const locale = request.headers.get("Accept-Language");
+    const useragent = request.headers.get("User-Agent");
 
-		let status = '';
-		const locale = request.headers.get('Accept-Language');
-		const useragent = request.headers.get('User-Agent');
+    if (clientIP == null) {
+      status = "ng";
+    } else {
+      status = "ok";
+    }
 
-		if (clientIP == null) {
-			status = 'ng';
-		} else {
-			status = 'ok';
-		}
+    const data: ReturnData = {
+      client_ip: clientIP || "Unknown",
+      locale: locale || "Unknown",
+      useragent: useragent || "Unknown",
+      country: request.cf?.country,
+      status,
+    };
 
-		const data: ReturnData = {
-			client_ip: clientIP || 'Unknown',
-			locale: locale || 'Unknown',
-			useragent: useragent || 'Unknown',
-			country: request.cf?.country,
-			status,
-		};
-
-		return Response.json(data);
-	},
+    return Response.json(data);
+  },
 } satisfies ExportedHandler<Env>;

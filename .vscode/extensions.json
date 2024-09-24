@@ -1,6 +1,6 @@
 {
-    "recommendations": [
-        "vscode-icons-team.vscode-icons",
-        "GitHub.github-vscode-theme"
-    ]
+  "recommendations": [
+    "vscode-icons-team.vscode-icons",
+    "GitHub.github-vscode-theme"
+  ]
 }
