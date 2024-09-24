@@ -1,3 +1,4 @@
 {
-		"**/*.ts": ["biome format --fix"]
+		"**/*.ts": ["biome format --fix"],
+		"**/*.json": ["biome format --fix"]
 }
